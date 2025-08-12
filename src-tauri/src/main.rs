@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    android_template_lib::run()
+    fullstack_panic_lib::run()
 }
