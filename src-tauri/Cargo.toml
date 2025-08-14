@@ -2,7 +2,7 @@
 name = "fullstack-panic"
 version = "0.1.0"
 description = "Monitor servers on your phone"
-authors = ["you"]
+authors = ["mcafalchio"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -20,6 +20,7 @@ tauri-build = { version = "2", features = [] }
 [dependencies]
 tauri = { version = "2", features = [] }
 tauri-plugin-opener = "2"
+openssl = { version = "0.10.35", features = ["vendored"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tauri-plugin-sql = { version = "2", features = ["sqlite"] }

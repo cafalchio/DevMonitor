@@ -5,13 +5,12 @@ use futures::future::join_all;
 use httping::{ping, ping_with_metrics};
 use serde::Serialize;
 
+static ONLINE_SERVERS: [&str; 3] = ["www.google.com", "one.one.one.one", "www.amazon.com"];
 static DB_URL: &str = "sqlite:mydatabase.db";
 
 #[tauri::command]
 async fn check_online() -> bool {
-    let servers = ["www.google.com", "one.one.one.one"];
-
-    let futures = servers
+    let futures = ONLINE_SERVERS
         .iter()
         .map(|&server| async move { ping(server, "", "http", 80).await.is_ok() });
 
