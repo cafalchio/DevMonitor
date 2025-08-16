@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    fullstack_panic_lib::run()
+    dev_monitor_lib::run()
 }

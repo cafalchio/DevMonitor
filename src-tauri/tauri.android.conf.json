@@ -26,7 +26,7 @@
     "app": {
       "windows": [
         {
-          "title": "Fullstack Panic!",
+          "title": "Dev Monitor",
           "width": 800,
           "height": 600,
           "resizable": false,
