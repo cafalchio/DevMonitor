@@ -73,7 +73,7 @@ jobs:
           TAURI_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           TAURI_ANDROID_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           TAURI_ANDROID_KEYSTORE_ALIAS: ${{ secrets.KEY_ALIAS }}
-        run: pnpm tauri android build --target aarch64 --release
+        run: npm run tauri android build -- --aab
 
       - name: Decode Google Play service account
         run: echo "${{ secrets.GOOGLE_PLAY_KEY }}" | base64 -d > /tmp/play-account.json
