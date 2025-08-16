@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import Navbar2 from "@/components/Navbar2";
+import Navbar2 from "@/components/SideBar";
 import Home from "../home";
 // import Database from '@tauri-apps/plugin-sql';
 
