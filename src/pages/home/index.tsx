@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-
 import useConnectionStore from '@/stores/connection';
+import ItemPC from '@/components/pc_item';
 
 
 function Home() {
@@ -21,6 +21,7 @@ function Home() {
           className={`inline-block h-3 w-3 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`}
         />
       </div>
+      <ItemPC />
     </div>
   );
 }

@@ -12,7 +12,7 @@ static DB_URL: &str = "sqlite:mydatabase.db";
 async fn check_online() -> bool {
     let futures = ONLINE_SERVERS
         .iter()
-        .map(|&server| async move { ping(server, "", "http", 80).await.is_ok() });
+        .map(|&server| async move { ping(server, "", "https", 443).await.is_ok() });
 
     join_all(futures).await.into_iter().any(|b| b)
 }
@@ -25,12 +25,12 @@ struct PingResult {
 
 #[tauri::command]
 async fn ping_server(
-    server_domain: &str,
-    host_address: &str,
+    domain: &str,
+    ip: &str,
     protocol: &str,
-    host_port: u32,
+    port: u32,
 ) -> Result<PingResult, String> {
-    match ping_with_metrics(server_domain, host_address, protocol, host_port).await {
+    match ping_with_metrics(domain, ip, protocol, port).await {
         Ok(v) => Ok(PingResult {
             success: v.success,
             rtt: v.rtt as u64,

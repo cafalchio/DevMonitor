@@ -9,6 +9,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+
 export function notify(title: string, body: string) {
   const { messagePermission } = usePermissionStore.getState() 
   if (!messagePermission) return

@@ -12,6 +12,5 @@ module.exports = {
     ],
     overrides: [
       { files: "*.svelte", options: { parser: "svelte" } },
-      { files: ["*.ts", "*.tsx"], options: { parser: "typescript" } },
     ]
   }

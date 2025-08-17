@@ -1,5 +1,4 @@
 import { Route, Routes } from "react-router-dom";
-import Navbar2 from "@/components/SideBar";
 import Home from "../home";
 import { useEffect } from "react";
 import {
@@ -8,6 +7,7 @@ import {
 } from '@tauri-apps/plugin-notification';
 import usePermissionStore from "@/stores/permissions";
 import useConnectionStore from "@/stores/connection";
+import SettingsDrawer from "@/components/SideBar";
 
 // import Database from '@tauri-apps/plugin-sql';
 // const db = await Database.load('sqlite:mydatabase.db');
@@ -32,8 +32,8 @@ function App() {
   
   // check if user is online every x seconds
   useEffect(() => {
-    checkOnline(); // immediate
-    const interval = setInterval(checkOnline, 10_000);
+    checkOnline();
+    const interval = setInterval(checkOnline, 30_000);
     return () => clearInterval(interval);
   }, []);
 
@@ -41,7 +41,7 @@ function App() {
   return (
     <>
     <div className="mt-8 mb-8 pt-safe-top pb-safe-bottom">
-      <Navbar2 />
+      <SettingsDrawer />
       <Routes>
         <Route path="/" element={<Home />} />
       </Routes>
