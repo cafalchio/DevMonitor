@@ -38,7 +38,6 @@ export default function ItemPC(props: Props) {
         <>
             <div>
                 <span>{serverName}</span>
-                {online ? <span>Online: </span> : <span>Offline: </span>}
                 <span
                     aria-label={online ? "online" : "offline"}
                     className={`inline-block h-3 w-3 rounded-full ${online ? "bg-green-500" : "bg-red-500"}`}
