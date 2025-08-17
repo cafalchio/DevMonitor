@@ -7,7 +7,7 @@ import {
 } from '@tauri-apps/plugin-notification';
 
 function Home() {
-  const [online, setOnline] = useState(false);
+  const [online, setOnline] = useState(true);
   const prevOnline = useRef<boolean | null>(null); // null so we don't alert on first read
   const notifyOk = useRef(false);
 
