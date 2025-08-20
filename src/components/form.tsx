@@ -200,6 +200,7 @@ export default function AddPCForm() {
                                         inputMode="numeric"
                                         min={1}
                                         max={65535}
+                                        value={field.value as number}
                                         placeholder="e.g., 443"
                                         className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
                                     />
