@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+import { Checkbox } from "./catalyst/checkbox"
 import { Button } from "./ui/button"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form"
 
@@ -44,7 +45,8 @@ const formSchema = z.object({
         .number("Port must be a number.")
         .int("Port must be an integer.")
         .min(1, "Port must be between 1 and 65535.")
-        .max(65535, "Port must be between 1 and 65535.")
+        .max(65535, "Port must be between 1 and 65535."),
+    notify: z.boolean()
 })
 
 // Types
@@ -58,7 +60,8 @@ export default function AddPCForm() {
         defaultValues: {
             servername: "",
             protocol: "https",
-            port: DEFAULT_PORTS.https
+            port: DEFAULT_PORTS.https,
+            notify: false
         }
     })
 
@@ -83,11 +86,12 @@ export default function AddPCForm() {
                 <form
                     // Inline callback lets RHF infer `values` as FormOutput
                     onSubmit={form.handleSubmit((values) => {
-                        console.log("Submit:", values) // values.port is number
+                        console.log("submit:", values) // values.port is number
                         form.reset({
                             servername: "",
                             protocol: "https",
-                            port: DEFAULT_PORTS.https
+                            port: DEFAULT_PORTS.https,
+                            notify: false
                         })
                     })}
                     className="space-y-2"
@@ -204,7 +208,28 @@ export default function AddPCForm() {
                             </FormItem>
                         )}
                     />
-
+                    <FormField
+                        control={form.control}
+                        name="notify"
+                        render={({ field }) => (
+                            <FormItem className="flex items-center space-x-2">
+                                <FormControl>
+                                    <Checkbox
+                                        id="notify"
+                                        checked={field.value as boolean}
+                                        onChange={field.onChange}
+                                    />
+                                </FormControl>
+                                <label
+                                    htmlFor="notify"
+                                    className="cursor-pointer text-sm select-none"
+                                >
+                                    Notify me
+                                </label>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
                     <div className="pt-2">
                         <Button type="submit" className="w-full">
                             Submit
