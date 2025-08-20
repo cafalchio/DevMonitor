@@ -9,17 +9,18 @@ import {
 } from "@headlessui/react"
 import { XMarkIcon } from "@heroicons/react/24/outline"
 import { Fragment, useState } from "react"
+import AddPCForm from "./form"
 
 export default function SettingsDrawer() {
     const [open, setOpen] = useState(false)
 
     return (
-        <div className="mb-8">
+        <div className="mb-8 px-3 py-4">
             <button
                 onClick={() => setOpen(true)}
-                className="rounded-md bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-300"
+                className="rounded-md bg-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:bg-gray-300"
             >
-                Open Settings
+                Add Server
             </button>
 
             <Transition show={open} as={Fragment}>
@@ -45,19 +46,12 @@ export default function SettingsDrawer() {
                                                 onClick={() => setOpen(false)}
                                                 className="text-gray-500 hover:text-gray-700"
                                             >
-                                                <XMarkIcon className="h-6 w-6" />
+                                                <XMarkIcon className="my-6 h-6 w-6" />
                                             </button>
                                         </div>
-
                                         {/* Panel content */}
-                                        <div className="p-6">
-                                            <h2 className="text-lg font-semibold text-gray-900">
-                                                Settings
-                                            </h2>
-                                            <p className="mt-2 text-sm text-gray-600">
-                                                This is where your settings
-                                                content goes.
-                                            </p>
+                                        <div className="text-center">
+                                            <AddPCForm />
                                         </div>
                                     </DialogPanel>
                                 </TransitionChild>

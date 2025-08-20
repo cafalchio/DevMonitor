@@ -1,71 +1,217 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import Database from "@tauri-apps/plugin-sql"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Button } from "./ui/button"
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage
-} from "./ui/form"
+import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form"
 
-const db = await Database.load("sqlite:mydatabase.db")
+const DEFAULT_PORTS = {
+    http: 80,
+    https: 443,
+    ftp: 21,
+    sftp: 22,
+    ssh: 22,
+    smtp: 25,
+    imap: 143,
+    pop3: 110,
+    mqtt: 1883,
+    amqp: 5672
+} as const
 
+const ProtocolEnum = z.enum([
+    "http",
+    "https",
+    "ftp",
+    "sftp",
+    "ssh",
+    "smtp",
+    "imap",
+    "pop3",
+    "mqtt",
+    "amqp"
+])
+
+// Schema (port coerced to number)
 const formSchema = z.object({
-    username: z.string().min(2, {
-        message: "Username must be at least 2 characters."
-    })
+    servername: z
+        .string()
+        .min(2, { message: "Server name must be at least 2 characters." })
+        .max(200, { message: "Server name is too long." }),
+    protocol: ProtocolEnum,
+    port: z.coerce
+        .number("Port must be a number.")
+        .int("Port must be an integer.")
+        .min(1, "Port must be between 1 and 65535.")
+        .max(65535, "Port must be between 1 and 65535.")
 })
 
-interface Props {
-    setUser: any
-}
+// Types
+type FormInput = z.input<typeof formSchema> // before coercion
+type FormOutput = z.output<typeof formSchema> // after coercion
 
-export function ProfileForm({ setUser }: Props) {
-    // 1. Define your form.
-    const form = useForm<z.infer<typeof formSchema>>({
+export default function AddPCForm() {
+    const form = useForm<FormInput, any, FormOutput>({
         resolver: zodResolver(formSchema),
+        mode: "onBlur",
         defaultValues: {
-            username: ""
+            servername: "",
+            protocol: "https",
+            port: DEFAULT_PORTS.https
         }
     })
 
-    // 2. Define a submit handler.
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-        console.log(values)
-        db.execute("INSERT INTO users (name) VALUES ($1)", [values.username])
-        setUser(values.username)
-        form.reset()
-    }
+    const protocol = form.watch("protocol")
+
+    // Auto-fill port when protocol changes, unless user edited port already
+    useEffect(() => {
+        if (!form.formState.dirtyFields?.port) {
+            const next = DEFAULT_PORTS[protocol as keyof typeof DEFAULT_PORTS]
+            form.setValue("port", next, {
+                shouldDirty: false,
+                shouldValidate: true
+            })
+        }
+    }, [protocol, form.formState.dirtyFields?.port, form])
+
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                <FormField
-                    control={form.control}
-                    name="username"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Username</FormLabel>
-                            <FormControl>
-                                <input placeholder="Add a user" {...field} />
-                            </FormControl>
-                            <FormDescription>
-                                This is your public display name.
-                            </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <Button type="submit">Submit</Button>
-            </form>
-        </Form>
+        <div className="mx-auto max-w-xl p-6">
+            <h2 className="text-md mb-6 font-semibold">Add Server</h2>
+
+            <Form {...form}>
+                <form
+                    // Inline callback lets RHF infer `values` as FormOutput
+                    onSubmit={form.handleSubmit((values) => {
+                        console.log("Submit:", values) // values.port is number
+                        form.reset({
+                            servername: "",
+                            protocol: "https",
+                            port: DEFAULT_PORTS.https
+                        })
+                    })}
+                    className="space-y-2"
+                >
+                    {/* Server name */}
+                    <FormField
+                        control={form.control}
+                        name="servername"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <input
+                                        {...field}
+                                        placeholder="Hostname or IPv4"
+                                        autoComplete="off"
+                                        className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    {/* Protocol */}
+                    <FormField
+                        control={form.control}
+                        name="protocol"
+                        render={({ field }) => (
+                            <FormItem className="text-sm">
+                                <FormControl>
+                                    <select
+                                        {...field}
+                                        className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                                    >
+                                        <option
+                                            className="text-sm"
+                                            value="http"
+                                        >
+                                            HTTP
+                                        </option>
+                                        <option
+                                            className="text-sm"
+                                            value="https"
+                                        >
+                                            HTTPS
+                                        </option>
+                                        <option className="text-sm" value="ftp">
+                                            FTP
+                                        </option>
+                                        <option
+                                            className="text-sm"
+                                            value="sftp"
+                                        >
+                                            SFTP
+                                        </option>
+                                        <option className="text-sm" value="ssh">
+                                            SSH
+                                        </option>
+                                        <option
+                                            className="text-sm"
+                                            value="smtp"
+                                        >
+                                            SMTP
+                                        </option>
+                                        <option
+                                            className="text-sm"
+                                            value="imap"
+                                        >
+                                            IMAP
+                                        </option>
+                                        <option
+                                            className="text-sm"
+                                            value="pop3"
+                                        >
+                                            POP3
+                                        </option>
+                                        <option
+                                            className="text-sm"
+                                            value="mqtt"
+                                        >
+                                            MQTT
+                                        </option>
+                                        <option
+                                            className="text-sm"
+                                            value="amqp"
+                                        >
+                                            AMQP
+                                        </option>
+                                    </select>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    {/* Port (auto-filled, user-editable) */}
+                    <FormField
+                        control={form.control}
+                        name="port"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <input
+                                        {...field}
+                                        type="number"
+                                        inputMode="numeric"
+                                        min={1}
+                                        max={65535}
+                                        placeholder="e.g., 443"
+                                        className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <div className="pt-2">
+                        <Button type="submit" className="w-full">
+                            Submit
+                        </Button>
+                    </div>
+                </form>
+            </Form>
+        </div>
     )
 }

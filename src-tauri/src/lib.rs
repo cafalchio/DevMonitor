@@ -6,7 +6,7 @@ use httping::{ping, ping_with_metrics};
 use serde::Serialize;
 
 static ONLINE_SERVERS: [&str; 3] = ["www.google.com", "one.one.one.one", "www.amazon.com"];
-static DB_URL: &str = "sqlite:mydatabase.db";
+static DB_URL: &str = "sqlite:mydb.db";
 
 #[tauri::command]
 async fn check_online() -> bool {

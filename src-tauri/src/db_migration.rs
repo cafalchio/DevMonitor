@@ -7,13 +7,15 @@ pub fn create_initial_tables() -> Vec<Migration> {
         Migration {
             version: 1,
             description: "create_initial_tables",
-            sql: "CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT);",
-            kind: MigrationKind::Up,
-        },
-        Migration {
-            version: 2,
-            description: "Add first value",
-            sql: "INSERT OR REPLACE INTO users (id, name) VALUES (1, 'First Person')",
+            sql: "CREATE TABLE servers (
+                id INTEGER PRIMARY KEY, 
+                displayname TEXT,
+                hostname TEXT, 
+                protocol TEXT,
+                port INTEGER,
+                timeMilliseconds INTEGER,
+                notify INTEGER 
+            );",
             kind: MigrationKind::Up,
         },
     ];
