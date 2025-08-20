@@ -21,6 +21,13 @@ const DEFAULT_PORTS = {
     amqp: 5672
 } as const
 
+const TIME_MS = {
+    five: 60000 * 5,
+    fifteen: 60000 * 15,
+    thirty: 60000 * 30,
+    hour: 60000 * 60
+} as const
+
 const ProtocolEnum = z.enum([
     "http",
     "https",
@@ -34,18 +41,15 @@ const ProtocolEnum = z.enum([
     "amqp"
 ])
 
+const TimeToCheckEnum = z.enum(["five", "fifteen", "thirty", "hour"])
+type TimeKey = z.infer<typeof TimeToCheckEnum>
+
 // Schema (port coerced to number)
 const formSchema = z.object({
-    servername: z
-        .string()
-        .min(2, { message: "Server name must be at least 2 characters." })
-        .max(200, { message: "Server name is too long." }),
+    servername: z.string().min(1, { message: "Required." }).max(50),
     protocol: ProtocolEnum,
-    port: z.coerce
-        .number("Port must be a number.")
-        .int("Port must be an integer.")
-        .min(1, "Port must be between 1 and 65535.")
-        .max(65535, "Port must be between 1 and 65535."),
+    port: z.coerce.number().int().min(1).max(65535),
+    timetocheck: TimeToCheckEnum.transform((k) => TIME_MS[k as TimeKey]),
     notify: z.boolean()
 })
 
@@ -61,6 +65,7 @@ export default function AddPCForm() {
             servername: "",
             protocol: "https",
             port: DEFAULT_PORTS.https,
+            timetocheck: "thirty",
             notify: false
         }
     })
@@ -204,6 +209,36 @@ export default function AddPCForm() {
                                         placeholder="e.g., 443"
                                         className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
                                     />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="timetocheck"
+                        render={({ field }) => (
+                            <FormItem className="text-sm">
+                                <FormControl>
+                                    <select
+                                        value={field.value ?? "thirty"}
+                                        onChange={field.onChange}
+                                        onBlur={field.onBlur}
+                                        name={field.name}
+                                        ref={field.ref}
+                                        className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                                    >
+                                        <option value="five">
+                                            Every 5 minutes
+                                        </option>
+                                        <option value="fifteen">
+                                            Every 15 minutes
+                                        </option>
+                                        <option value="thirty">
+                                            Every 30 minutes
+                                        </option>
+                                        <option value="hour">Every hour</option>
+                                    </select>
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
