@@ -4,6 +4,7 @@ pub mod db_migration;
 use futures::future::join_all;
 use httping::{ping, ping_with_metrics};
 use serde::Serialize;
+use std::net::Ipv4Addr;
 
 static ONLINE_SERVERS: [&str; 3] = ["www.google.com", "one.one.one.one", "www.amazon.com"];
 static DB_URL: &str = "sqlite:mydb.db";
@@ -19,19 +20,23 @@ async fn check_online() -> bool {
 
 #[derive(Serialize)]
 struct PingResult {
+    server_name: String,
     success: bool,
     rtt: u64,
 }
 
 #[tauri::command]
-async fn ping_server(
-    domain: &str,
-    ip: &str,
-    protocol: &str,
-    port: u32,
-) -> Result<PingResult, String> {
-    match ping_with_metrics(domain, ip, protocol, port).await {
+async fn ping_server(domain: &str, protocol: &str, port: u32) -> Result<PingResult, String> {
+    let mut ip = "".to_string();
+    let mut server_domain = domain.to_string();
+
+    if domain.parse::<Ipv4Addr>().is_ok() {
+        ip = server_domain.clone();
+        server_domain = "".to_string();
+    }
+    match ping_with_metrics(&server_domain, &ip, protocol, port).await {
         Ok(v) => Ok(PingResult {
+            server_name: domain.to_string(),
             success: v.success,
             rtt: v.rtt as u64,
         }),
