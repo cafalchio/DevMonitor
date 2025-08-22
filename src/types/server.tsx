@@ -5,7 +5,7 @@ export type ServerCall = {
     port: number
 }
 
-export type Server = {
+export type ServerPC = {
     serverName: string
     ip_domain: string
     protocol: string

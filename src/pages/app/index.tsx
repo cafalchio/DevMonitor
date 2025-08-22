@@ -36,6 +36,7 @@ function App() {
     return (
         <>
             <div className="pt-safe-top pb-safe-bottom mt-8 mb-8">
+                test
                 <SettingsDrawer />
                 <Routes>
                     <Route path="/" element={<Home />} />

@@ -1,11 +1,31 @@
 import ItemPC from "@/components/pc_item"
 import useConnectionStore from "@/stores/connection"
-import { Server } from "@/types/server"
-import Database from "@tauri-apps/plugin-sql"
+// import { Server } from "@/types/server"
+// import Database from "@tauri-apps/plugin-sql"
+import { ServerPC } from "@/types/server"
 import { useEffect, useState } from "react"
 
-const db = await Database.load("sqlite:mydatabase.db")
-const servers = await db.select<Server[]>("SELECT * FROM pcs")
+// const db = await Database.load("sqlite:mydatabase.db")
+// const servers = await db.select<Server[]>("SELECT * FROM pcs")
+
+const servers: ServerPC[] = [
+    {
+        serverName: "Uol",
+        ip_domain: "www.uol.com.br",
+        protocol: "https",
+        port: 443,
+        timeMilliseconds: 10000,
+        notify: true
+    },
+    {
+        serverName: "Gmail",
+        ip_domain: "www.gmail.com",
+        protocol: "https",
+        port: 443,
+        timeMilliseconds: 10000,
+        notify: true
+    }
+]
 
 function Home() {
     const { isOnline, checkOnline } = useConnectionStore()

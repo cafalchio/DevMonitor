@@ -1,20 +1,11 @@
-import { PingResult, Server } from "@/types/server"
+import { PingResult, ServerPC } from "@/types/server"
 import { invoke } from "@tauri-apps/api/core"
 import { error, info } from "@tauri-apps/plugin-log"
 import { useEffect, useState } from "react"
 
 interface Props {
-    server: Server
+    server: ServerPC
 }
-
-// export type Server = {
-//     serverName: string
-//     ip_domain: string
-//     protocol: string
-//     port: number
-//     timeMilliseconds: number
-//     notify: boolean
-// }
 
 export default function ItemPC(props: Props) {
     const { server } = props
@@ -24,7 +15,7 @@ export default function ItemPC(props: Props) {
         const checkOnline = async () => {
             try {
                 const result = await invoke<PingResult>("ping_server", {
-                    domain: server.serverName,
+                    domain: server.ip_domain,
                     ip: server.ip_domain,
                     protocol: server.protocol,
                     port: server.port
