@@ -25,12 +25,12 @@ const DEFAULT_PORTS = {
     amqp: 5672
 } as const
 
-// const TIME_MS = {
-//     five: 60000 * 5,
-//     fifteen: 60000 * 15,
-//     thirty: 60000 * 30,
-//     hour: 60000 * 60
-// } as const
+const TIME_MS = {
+    five: 60000 * 5,
+    fifteen: 60000 * 15,
+    thirty: 60000 * 30,
+    hour: 60000 * 60
+} as const
 
 const ProtocolEnum = z.enum([
     "http",
@@ -101,7 +101,7 @@ export default function AddPCForm() {
                                 values.servername,
                                 values.protocol,
                                 values.port,
-                                values.timetocheck,
+                                TIME_MS[values.timetocheck],
                                 values.notify ? 1 : 0
                             ]
                         )
@@ -117,6 +117,7 @@ export default function AddPCForm() {
                             servername: "",
                             protocol: "https",
                             port: DEFAULT_PORTS.https,
+                            timetocheck: "thirty",
                             notify: false
                         })
                     })}
