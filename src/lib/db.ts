@@ -4,7 +4,7 @@ let dbPromise: Promise<DB> | null = null
 
 export function getDB(): Promise<DB> {
   if (!dbPromise) {
-    dbPromise = DB.load("sqlite:mydatabase.db")
+    dbPromise = DB.load("sqlite:data.db")
   }
   return dbPromise
 }

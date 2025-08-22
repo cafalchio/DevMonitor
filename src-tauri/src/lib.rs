@@ -7,7 +7,7 @@ use serde::Serialize;
 use std::net::Ipv4Addr;
 
 static ONLINE_SERVERS: [&str; 3] = ["www.google.com", "one.one.one.one", "www.amazon.com"];
-static DB_URL: &str = "sqlite:mydb.db";
+static DB_URL: &str = "sqlite:data.db";
 
 #[tauri::command]
 async fn check_online() -> bool {

@@ -1,5 +1,5 @@
 import ItemPC from "@/components/pc_item"
-import { getDB } from "@/lib/db" // 👈 import your helper
+import { getDB } from "@/lib/db"
 import useConnectionStore from "@/stores/connection"
 import { ServerPC } from "@/types/server"
 import { useEffect, useState } from "react"
@@ -20,22 +20,21 @@ function Home() {
         const load = async () => {
             try {
                 const db = await getDB()
+
                 type Row = {
                     serverName: string
                     ip_domain: string
                     protocol: string
                     port: number
                     timeMilliseconds: number
-                    notify: number // stored as 0/1
+                    notify: number // 0/1 in DB
                 }
-                const rows = await db.select<Row[]>(
-                    `SELECT serverName, ip_domain, protocol, port, timeMilliseconds, notify 
-           FROM pcs 
-           ORDER BY serverName`
-                )
 
+                const rows = await db.select<Row[]>(
+                    `SELECT serverName, ip_domain, protocol, port, timeMilliseconds, notify FROM servers ORDER BY serverName`
+                )
                 if (!cancelled) {
-                    const data: ServerPC[] = rows.map((r) => ({
+                    const data: ServerPC[] = rows.map((r: Row) => ({
                         serverName: r.serverName,
                         ip_domain: r.ip_domain,
                         protocol: r.protocol as ServerPC["protocol"],

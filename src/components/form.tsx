@@ -89,7 +89,6 @@ export default function AddPCForm() {
     const onSubmit = async (values: FormOutput) => {
         try {
             const db = await getDB()
-            // ✅ 6 columns, 6 placeholders
             await db.execute(
                 `INSERT INTO servers (servername, ip_domain, protocol, port, timetocheck, notify)
          VALUES (?, ?, ?, ?, ?, ?)`,
