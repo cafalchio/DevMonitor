@@ -1,12 +1,16 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import Database from "@tauri-apps/plugin-sql"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Checkbox } from "./catalyst/checkbox"
 import { Button } from "./ui/button"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form"
+
+// Initialize the database connection (adjust path as needed)
+const db = await Database.load("sqlite:mydatabase.db")
 
 const DEFAULT_PORTS = {
     http: 80,
@@ -21,12 +25,12 @@ const DEFAULT_PORTS = {
     amqp: 5672
 } as const
 
-const TIME_MS = {
-    five: 60000 * 5,
-    fifteen: 60000 * 15,
-    thirty: 60000 * 30,
-    hour: 60000 * 60
-} as const
+// const TIME_MS = {
+//     five: 60000 * 5,
+//     fifteen: 60000 * 15,
+//     thirty: 60000 * 30,
+//     hour: 60000 * 60
+// } as const
 
 const ProtocolEnum = z.enum([
     "http",
@@ -42,14 +46,13 @@ const ProtocolEnum = z.enum([
 ])
 
 const TimeToCheckEnum = z.enum(["five", "fifteen", "thirty", "hour"])
-type TimeKey = z.infer<typeof TimeToCheckEnum>
 
 // Schema (port coerced to number)
 const formSchema = z.object({
     servername: z.string().min(1, { message: "Required." }).max(50),
     protocol: ProtocolEnum,
     port: z.coerce.number().int().min(1).max(65535),
-    timetocheck: TimeToCheckEnum.transform((k) => TIME_MS[k as TimeKey]),
+    timetocheck: TimeToCheckEnum,
     notify: z.boolean()
 })
 
@@ -91,6 +94,24 @@ export default function AddPCForm() {
                 <form
                     // Inline callback lets RHF infer `values` as FormOutput
                     onSubmit={form.handleSubmit((values) => {
+                        // Insert into database
+                        db.execute(
+                            `INSERT INTO servers (servername, protocol, port, timetocheck, notify) VALUES (?, ?, ?, ?, ?)`,
+                            [
+                                values.servername,
+                                values.protocol,
+                                values.port,
+                                values.timetocheck,
+                                values.notify ? 1 : 0
+                            ]
+                        )
+                            .then(() => {
+                                console.log("Server added successfully")
+                            })
+                            .catch((err) => {
+                                console.error("Error adding server:", err)
+                            })
+                        // Reset form after submission
                         console.log("submit:", values) // values.port is number
                         form.reset({
                             servername: "",
