@@ -7,7 +7,7 @@ export type ServerCall = {
 
 export type Server = {
     serverName: string
-    ip: string
+    ip_domain: string
     protocol: string
     port: number
     timeMilliseconds: number
@@ -15,6 +15,7 @@ export type Server = {
 }
 
 export type PingResult = {
+    domain: string
     success: boolean
     rtt: number
 }
