@@ -1,16 +1,14 @@
+// AddPCForm.tsx
 "use client"
 
+import { getDB } from "@/lib/db"
 import { zodResolver } from "@hookform/resolvers/zod"
-import Database from "@tauri-apps/plugin-sql"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Checkbox } from "./catalyst/checkbox"
 import { Button } from "./ui/button"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form"
-
-// Initialize the database connection (adjust path as needed)
-const db = await Database.load("sqlite:mydatabase.db")
 
 const DEFAULT_PORTS = {
     http: 80,
@@ -47,25 +45,26 @@ const ProtocolEnum = z.enum([
 
 const TimeToCheckEnum = z.enum(["five", "fifteen", "thirty", "hour"])
 
-// Schema (port coerced to number)
+// ✅ Schema keys match form field names
 const formSchema = z.object({
-    servername: z.string().min(1, { message: "Required." }).max(50),
+    serverName: z.string().min(1, { message: "Required." }).max(50),
+    ip_domain: z.string().min(1, { message: "Required." }).max(255),
     protocol: ProtocolEnum,
     port: z.coerce.number().int().min(1).max(65535),
     timetocheck: TimeToCheckEnum,
     notify: z.boolean()
 })
 
-// Types
-type FormInput = z.input<typeof formSchema> // before coercion
-type FormOutput = z.output<typeof formSchema> // after coercion
+type FormInput = z.input<typeof formSchema>
+type FormOutput = z.output<typeof formSchema>
 
 export default function AddPCForm() {
     const form = useForm<FormInput, any, FormOutput>({
         resolver: zodResolver(formSchema),
         mode: "onBlur",
         defaultValues: {
-            servername: "",
+            serverName: "",
+            ip_domain: "",
             protocol: "https",
             port: DEFAULT_PORTS.https,
             timetocheck: "thirty",
@@ -75,58 +74,77 @@ export default function AddPCForm() {
 
     const protocol = form.watch("protocol")
 
-    // Auto-fill port when protocol changes, unless user edited port already
+    // Auto-fill port when protocol changes if user hasn’t touched port
     useEffect(() => {
-        if (!form.formState.dirtyFields?.port) {
+        const dirtyPort = (form.formState.dirtyFields as any)?.port
+        if (!dirtyPort) {
             const next = DEFAULT_PORTS[protocol as keyof typeof DEFAULT_PORTS]
             form.setValue("port", next, {
                 shouldDirty: false,
                 shouldValidate: true
             })
         }
-    }, [protocol, form.formState.dirtyFields?.port, form])
+    }, [protocol, form])
+
+    const onSubmit = async (values: FormOutput) => {
+        try {
+            const db = await getDB()
+            // ✅ 6 columns, 6 placeholders
+            await db.execute(
+                `INSERT INTO servers (servername, ip_domain, protocol, port, timetocheck, notify)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+                [
+                    values.serverName,
+                    values.ip_domain,
+                    values.protocol,
+                    values.port,
+                    TIME_MS[values.timetocheck],
+                    values.notify ? 1 : 0
+                ]
+            )
+            console.log("Server added successfully")
+            form.reset({
+                serverName: "",
+                ip_domain: "",
+                protocol: "https",
+                port: DEFAULT_PORTS.https,
+                timetocheck: "thirty",
+                notify: false
+            })
+        } catch (err) {
+            console.error("Error adding server:", err)
+        }
+    }
 
     return (
-        <div className="mx-auto max-w-xl p-6">
-            <h2 className="text-md mb-6 font-semibold">Add Server</h2>
-
+        <div className="mx-auto max-w-xl">
+            <h3 className="text-md py-4 font-semibold">Add Server</h3>
             <Form {...form}>
                 <form
-                    // Inline callback lets RHF infer `values` as FormOutput
-                    onSubmit={form.handleSubmit((values) => {
-                        // Insert into database
-                        db.execute(
-                            `INSERT INTO servers (servername, protocol, port, timetocheck, notify) VALUES (?, ?, ?, ?, ?)`,
-                            [
-                                values.servername,
-                                values.protocol,
-                                values.port,
-                                TIME_MS[values.timetocheck],
-                                values.notify ? 1 : 0
-                            ]
-                        )
-                            .then(() => {
-                                console.log("Server added successfully")
-                            })
-                            .catch((err) => {
-                                console.error("Error adding server:", err)
-                            })
-                        // Reset form after submission
-                        console.log("submit:", values) // values.port is number
-                        form.reset({
-                            servername: "",
-                            protocol: "https",
-                            port: DEFAULT_PORTS.https,
-                            timetocheck: "thirty",
-                            notify: false
-                        })
-                    })}
+                    onSubmit={form.handleSubmit(onSubmit)}
                     className="space-y-2"
                 >
-                    {/* Server name */}
                     <FormField
                         control={form.control}
-                        name="servername"
+                        name="serverName"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <input
+                                        {...field}
+                                        placeholder="Name to display"
+                                        autoComplete="off"
+                                        className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="ip_domain"
                         render={({ field }) => (
                             <FormItem>
                                 <FormControl>
@@ -142,7 +160,6 @@ export default function AddPCForm() {
                         )}
                     />
 
-                    {/* Protocol */}
                     <FormField
                         control={form.control}
                         name="protocol"
@@ -153,60 +170,16 @@ export default function AddPCForm() {
                                         {...field}
                                         className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
                                     >
-                                        <option
-                                            className="text-sm"
-                                            value="http"
-                                        >
-                                            HTTP
-                                        </option>
-                                        <option
-                                            className="text-sm"
-                                            value="https"
-                                        >
-                                            HTTPS
-                                        </option>
-                                        <option className="text-sm" value="ftp">
-                                            FTP
-                                        </option>
-                                        <option
-                                            className="text-sm"
-                                            value="sftp"
-                                        >
-                                            SFTP
-                                        </option>
-                                        <option className="text-sm" value="ssh">
-                                            SSH
-                                        </option>
-                                        <option
-                                            className="text-sm"
-                                            value="smtp"
-                                        >
-                                            SMTP
-                                        </option>
-                                        <option
-                                            className="text-sm"
-                                            value="imap"
-                                        >
-                                            IMAP
-                                        </option>
-                                        <option
-                                            className="text-sm"
-                                            value="pop3"
-                                        >
-                                            POP3
-                                        </option>
-                                        <option
-                                            className="text-sm"
-                                            value="mqtt"
-                                        >
-                                            MQTT
-                                        </option>
-                                        <option
-                                            className="text-sm"
-                                            value="amqp"
-                                        >
-                                            AMQP
-                                        </option>
+                                        <option value="http">HTTP</option>
+                                        <option value="https">HTTPS</option>
+                                        <option value="ftp">FTP</option>
+                                        <option value="sftp">SFTP</option>
+                                        <option value="ssh">SSH</option>
+                                        <option value="smtp">SMTP</option>
+                                        <option value="imap">IMAP</option>
+                                        <option value="pop3">POP3</option>
+                                        <option value="mqtt">MQTT</option>
+                                        <option value="amqp">AMQP</option>
                                     </select>
                                 </FormControl>
                                 <FormMessage />
@@ -214,7 +187,6 @@ export default function AddPCForm() {
                         )}
                     />
 
-                    {/* Port (auto-filled, user-editable) */}
                     <FormField
                         control={form.control}
                         name="port"
@@ -236,6 +208,7 @@ export default function AddPCForm() {
                             </FormItem>
                         )}
                     />
+
                     <FormField
                         control={form.control}
                         name="timetocheck"
@@ -266,6 +239,7 @@ export default function AddPCForm() {
                             </FormItem>
                         )}
                     />
+
                     <FormField
                         control={form.control}
                         name="notify"
@@ -288,6 +262,7 @@ export default function AddPCForm() {
                             </FormItem>
                         )}
                     />
+
                     <div className="pt-2">
                         <Button type="submit" className="w-full">
                             Submit

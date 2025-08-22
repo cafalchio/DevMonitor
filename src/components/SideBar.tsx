@@ -15,7 +15,10 @@ export default function SettingsDrawer() {
     const [open, setOpen] = useState(false)
 
     return (
-        <div className="mb-8 px-3 py-4">
+        <div
+            className="sticky z-10 bg-white/80 px-3 pb-2 backdrop-blur"
+            style={{ top: "max(env(safe-area-inset-top), 0px)" }}
+        >
             <button
                 onClick={() => setOpen(true)}
                 className="rounded-md bg-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:bg-gray-300"
@@ -29,7 +32,7 @@ export default function SettingsDrawer() {
 
                     <div className="fixed inset-0 overflow-hidden">
                         <div className="absolute inset-0 overflow-hidden">
-                            <div className="pointer-events-none fixed inset-y-0 left-0 flex max-w-full pr-10">
+                            <div className="pointer-events-none fixed inset-y-0 left-0 flex max-w-full">
                                 <TransitionChild
                                     as={Fragment}
                                     enter="transform transition ease-in-out duration-300"
@@ -39,18 +42,19 @@ export default function SettingsDrawer() {
                                     leaveFrom="translate-x-0"
                                     leaveTo="-translate-x-full"
                                 >
-                                    <DialogPanel className="pointer-events-auto w-5/6 bg-white shadow-xl">
-                                        {/* Close button */}
-                                        <div className="flex justify-end p-4 pt-8">
+                                    <DialogPanel className="pointer-events-auto flex h-full w-5/6 max-w-md flex-col bg-white shadow-xl">
+                                        {/* Header */}
+                                        <div className="flex items-center justify-end px-3 pt-[calc(env(safe-area-inset-top)+.8rem)]">
                                             <button
                                                 onClick={() => setOpen(false)}
                                                 className="text-gray-500 hover:text-gray-700"
                                             >
-                                                <XMarkIcon className="my-6 h-6 w-6" />
+                                                <XMarkIcon className="h-6 w-6" />
                                             </button>
                                         </div>
+
                                         {/* Panel content */}
-                                        <div className="text-center">
+                                        <div className="overflow-y-auto p-4">
                                             <AddPCForm />
                                         </div>
                                     </DialogPanel>

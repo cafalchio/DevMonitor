@@ -9,8 +9,8 @@ pub fn create_initial_tables() -> Vec<Migration> {
             description: "create_initial_tables",
             sql: "CREATE TABLE servers (
                 id INTEGER PRIMARY KEY, 
-                displayname TEXT,
-                hostname TEXT, 
+                serverName TEXT,
+                ip_domain TEXT, 
                 protocol TEXT,
                 port INTEGER,
                 timeMilliseconds INTEGER,
