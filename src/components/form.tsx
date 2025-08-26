@@ -89,8 +89,17 @@ export default function AddPCForm() {
     const onSubmit = async (values: FormOutput) => {
         try {
             const db = await getDB()
+            console.log("DB", db)
+            console.log(              [
+                    values.serverName,
+                    values.ip_domain,
+                    values.protocol,
+                    values.port,
+                    TIME_MS[values.timetocheck],
+                    values.notify ? 1 : 0
+                ])
             await db.execute(
-                `INSERT INTO servers (servername, ip_domain, protocol, port, timetocheck, notify)
+                `INSERT INTO servers (servername, ip_domain, protocol, port, timeMilliseconds, notify)
          VALUES (?, ?, ?, ?, ?, ?)`,
                 [
                     values.serverName,
