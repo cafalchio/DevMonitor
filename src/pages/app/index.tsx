@@ -1,3 +1,4 @@
+import { Divider } from "@/components/catalyst/divider"
 import SettingsDrawer from "@/components/SideBar"
 import useConnectionStore from "@/stores/connection"
 import usePermissionStore from "@/stores/permissions"
@@ -35,6 +36,7 @@ function App() {
 
     return (
         <>
+            <Divider soft />
             <div className="pt-safe-top pb-safe-bottom mt-8 mb-8">
                 <SettingsDrawer />
                 <Routes>

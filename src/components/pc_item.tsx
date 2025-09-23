@@ -1,4 +1,5 @@
 import { PingResult, ServerPC } from "@/types/server"
+import { ComputerDesktopIcon } from "@heroicons/react/24/outline"
 import { invoke } from "@tauri-apps/api/core"
 import { error, info } from "@tauri-apps/plugin-log"
 import { useEffect, useState } from "react"
@@ -33,14 +34,21 @@ export default function ItemPC(props: Props) {
     }, [])
 
     return (
-        <>
-            <div>
-                <span>{server.serverName}</span>
-                <span
-                    aria-label={online ? "online" : "offline"}
-                    className={`inline-block h-3 w-3 rounded-full ${online ? "bg-green-500" : "bg-red-500"}`}
-                />
+        <a
+            href={"#"}
+            className="mx-auto block w-4/5 rounded-lg border border-gray-200 bg-white p-6 shadow-sm hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+        >
+            <div className="flex items-center gap-4">
+                <ComputerDesktopIcon className="h-8 w-8 text-gray-500 dark:text-gray-300" />
+                <h5 className="flex items-center gap-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                    {server.serverName}
+                    <span
+                        className={`inline-block h-3 w-3 rounded-full ${
+                            online ? "bg-green-500" : "bg-red-500"
+                        }`}
+                    />
+                </h5>
             </div>
-        </>
+        </a>
     )
 }

@@ -60,25 +60,35 @@ function Home() {
     }, [])
 
     return (
-        <div className="pt-safe-top pb-safe-bottom flex flex-col items-center justify-center overflow-y-auto">
-            <h1 className="text-2xl font-semibold">Home Page</h1>
-            <div>
-                {isOnline ? <span>Online: </span> : <span>Offline: </span>}
+        <div className="pt-safe-top pb-safe-bottom flex flex-col gap-4 overflow-y-auto px-4">
+            {/* Online/Offline Status */}
+            <div className="flex items-center gap-2 text-lg font-bold">
+                <span>{isOnline ? "System Online:" : "System Offline:"}</span>
                 <span
                     aria-label={isOnline ? "online" : "offline"}
-                    className={`inline-block h-3 w-3 rounded-full ${isOnline ? "bg-green-500" : "bg-red-500"}`}
+                    className={`inline-block h-4 w-4 rounded-full ${
+                        isOnline ? "bg-green-500" : "bg-red-500"
+                    }`}
                 />
             </div>
 
-            {loading && <div>Loading servers…</div>}
-            {err && <div className="text-red-600">Failed to load: {err}</div>}
+            {/* Loading/Error */}
+            {loading && <div className="text-gray-500">Loading servers…</div>}
+            {err && (
+                <div className="font-medium text-red-600">
+                    Failed to load: {err}
+                </div>
+            )}
 
-            {serversList.map((server) => (
-                <ItemPC
-                    key={`${server.serverName}-${server.ip_domain}`}
-                    server={server}
-                />
-            ))}
+            {/* Servers List */}
+            <div className="flex flex-col gap-4">
+                {serversList.map((server) => (
+                    <ItemPC
+                        key={`${server.serverName}-${server.ip_domain}`}
+                        server={server}
+                    />
+                ))}
+            </div>
         </div>
     )
 }
