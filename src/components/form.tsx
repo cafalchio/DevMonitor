@@ -2,6 +2,7 @@
 "use client"
 
 import { getDB } from "@/lib/db"
+import useComputerStore from "@/stores/pc_store"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
@@ -47,8 +48,8 @@ const TimeToCheckEnum = z.enum(["five", "fifteen", "thirty", "hour"])
 
 // ✅ Schema keys match form field names
 const formSchema = z.object({
-    serverName: z.string().min(1, { message: "Required." }).max(50),
-    ip_domain: z.string().min(1, { message: "Required." }).max(255),
+    serverName: z.string().min(1, { message: "Required." }).max(10),
+    ip_domain: z.string().min(1, { message: "Required." }).max(100),
     protocol: ProtocolEnum,
     port: z.coerce.number().int().min(1).max(65535),
     timetocheck: TimeToCheckEnum,
@@ -115,6 +116,7 @@ export default function AddPCForm({ addedToFormToggle }: AddPCFormProps) {
                 ]
             )
             console.log("Server added successfully")
+            window.location.reload()
             form.reset({
                 serverName: "",
                 ip_domain: "",

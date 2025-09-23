@@ -12,8 +12,6 @@ const useConnectionStore = create<ConnectionStore>((set) => ({
         const result = await invoke<boolean>("check_online")
         set({ isOnline: result })
     }
-
-
 }))
 
 export default useConnectionStore
