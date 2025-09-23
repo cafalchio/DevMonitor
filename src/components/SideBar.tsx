@@ -55,7 +55,9 @@ export default function SettingsDrawer() {
 
                                         {/* Panel content */}
                                         <div className="overflow-y-auto p-4">
-                                            <AddPCForm />
+                                            <AddPCForm
+                                                addedToFormToggle={setOpen}
+                                            />
                                         </div>
                                     </DialogPanel>
                                 </TransitionChild>

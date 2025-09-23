@@ -12,15 +12,15 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form"
 
 const DEFAULT_PORTS = {
     http: 80,
-    https: 443,
-    ftp: 21,
-    sftp: 22,
-    ssh: 22,
-    smtp: 25,
-    imap: 143,
-    pop3: 110,
-    mqtt: 1883,
-    amqp: 5672
+    https: 443
+    // ftp: 21,
+    // sftp: 22,
+    // ssh: 22,
+    // smtp: 25,
+    // imap: 143,
+    // pop3: 110,
+    // mqtt: 1883,
+    // amqp: 5672
 } as const
 
 const TIME_MS = {
@@ -32,15 +32,15 @@ const TIME_MS = {
 
 const ProtocolEnum = z.enum([
     "http",
-    "https",
-    "ftp",
-    "sftp",
-    "ssh",
-    "smtp",
-    "imap",
-    "pop3",
-    "mqtt",
-    "amqp"
+    "https"
+    // "ftp",
+    // "sftp",
+    // "ssh",
+    // "smtp",
+    // "imap",
+    // "pop3",
+    // "mqtt",
+    // "amqp"
 ])
 
 const TimeToCheckEnum = z.enum(["five", "fifteen", "thirty", "hour"])
@@ -58,7 +58,11 @@ const formSchema = z.object({
 type FormInput = z.input<typeof formSchema>
 type FormOutput = z.output<typeof formSchema>
 
-export default function AddPCForm() {
+interface AddPCFormProps {
+    addedToFormToggle: (value: boolean) => void
+}
+
+export default function AddPCForm({ addedToFormToggle }: AddPCFormProps) {
     const form = useForm<FormInput, any, FormOutput>({
         resolver: zodResolver(formSchema),
         mode: "onBlur",
@@ -90,14 +94,14 @@ export default function AddPCForm() {
         try {
             const db = await getDB()
             console.log("DB", db)
-            console.log(              [
-                    values.serverName,
-                    values.ip_domain,
-                    values.protocol,
-                    values.port,
-                    TIME_MS[values.timetocheck],
-                    values.notify ? 1 : 0
-                ])
+            console.log([
+                values.serverName,
+                values.ip_domain,
+                values.protocol,
+                values.port,
+                TIME_MS[values.timetocheck],
+                values.notify ? 1 : 0
+            ])
             await db.execute(
                 `INSERT INTO servers (servername, ip_domain, protocol, port, timeMilliseconds, notify)
          VALUES (?, ?, ?, ?, ?, ?)`,
@@ -119,6 +123,7 @@ export default function AddPCForm() {
                 timetocheck: "thirty",
                 notify: false
             })
+            addedToFormToggle(false)
         } catch (err) {
             console.error("Error adding server:", err)
         }
@@ -180,14 +185,14 @@ export default function AddPCForm() {
                                     >
                                         <option value="http">HTTP</option>
                                         <option value="https">HTTPS</option>
-                                        <option value="ftp">FTP</option>
+                                        {/* <option value="ftp">FTP</option>
                                         <option value="sftp">SFTP</option>
                                         <option value="ssh">SSH</option>
                                         <option value="smtp">SMTP</option>
                                         <option value="imap">IMAP</option>
                                         <option value="pop3">POP3</option>
                                         <option value="mqtt">MQTT</option>
-                                        <option value="amqp">AMQP</option>
+                                        <option value="amqp">AMQP</option> */}
                                     </select>
                                 </FormControl>
                                 <FormMessage />
