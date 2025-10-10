@@ -33,7 +33,6 @@ function Home() {
                 const rows = await db.select<Row[]>(
                     `SELECT serverName, ip_domain, protocol, port, timeMilliseconds, notify FROM servers ORDER BY serverName`
                 )
-                console.log(rows)
                 if (!cancelled) {
                     const data: ServerPC[] = rows.map((r: Row) => ({
                         serverName: r.serverName,

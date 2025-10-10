@@ -8,3 +8,8 @@ export function getDB(): Promise<DB> {
   }
   return dbPromise
 }
+export async function deleteServer(serverName: string) {
+    const db = await getDB()
+    await db.execute(`DELETE FROM servers WHERE serverName = ?`, [serverName])
+    window.location.reload()
+}

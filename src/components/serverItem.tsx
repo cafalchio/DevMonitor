@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge"
+import { deleteServer } from "@/lib/db"
 import { PingResult, ServerPC } from "@/types/server"
 import { invoke } from "@tauri-apps/api/core"
 import { error, info } from "@tauri-apps/plugin-log"
@@ -79,7 +80,7 @@ export default function ServerItem({ server }: { server: ServerPC }) {
                     <div className="min-w-0 flex-1">
                         <div className="mb-1 flex items-center gap-2">
                             <h3 className="truncate font-semibold text-gray-900">
-                                {server.serverName}
+                                {server.serverName.slice(0, 20)}
                             </h3>
                             {server.notify && (
                                 <AlertTriangle className="h-4 w-4 flex-shrink-0 text-amber-500" />
@@ -124,6 +125,12 @@ export default function ServerItem({ server }: { server: ServerPC }) {
                             : online
                               ? "Online"
                               : "Offline"}
+                    </Badge>
+                    <Badge
+                        onClick={() => deleteServer(server.serverName)}
+                        className="font-mediumborder-red-200 rounded-full border border-gray-200 bg-red-50 px-3 py-1 text-xs text-red-700"
+                    >
+                        Delete
                     </Badge>
                 </div>
             </div>
