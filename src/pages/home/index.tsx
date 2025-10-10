@@ -1,4 +1,4 @@
-import ItemPC from "@/components/pc_item"
+import ItemPC from "@/components/serverItem"
 import { getDB } from "@/lib/db"
 import useConnectionStore from "@/stores/connection"
 import { ServerPC } from "@/types/server"
@@ -62,14 +62,8 @@ function Home() {
     return (
         <div className="pt-safe-top pb-safe-bottom flex flex-col gap-4 overflow-y-auto px-4">
             {/* Online/Offline Status */}
-            <div className="flex items-center gap-2 text-lg font-bold">
-                <span>{isOnline ? "System Online:" : "System Offline:"}</span>
-                <span
-                    aria-label={isOnline ? "online" : "offline"}
-                    className={`inline-block h-4 w-4 rounded-full ${
-                        isOnline ? "bg-green-500" : "bg-red-500"
-                    }`}
-                />
+            <div className="text-md flex items-center justify-start gap-2 font-bold">
+                <span>{isOnline ? "" : "System Offline!"}</span>
             </div>
 
             {/* Loading/Error */}
