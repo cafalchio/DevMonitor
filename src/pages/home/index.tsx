@@ -74,7 +74,7 @@ function Home() {
             )}
 
             {/* Servers List */}
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col">
                 {serversList.map((server) => (
                     <ItemPC
                         key={`${server.serverName}-${server.ip_domain}`}
