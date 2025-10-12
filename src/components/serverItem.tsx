@@ -6,9 +6,20 @@ import { error, info } from "@tauri-apps/plugin-log"
 import { Minus, Monitor } from "lucide-react"
 import { useEffect, useState } from "react"
 
-export default function ServerItem({ server }: { server: ServerPC }) {
+interface ServerItemsProps {
+    server: ServerPC
+    reloaded: boolean
+    setReloaded: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export default function ServerItem({
+    server,
+    reloaded,
+    setReloaded
+}: ServerItemsProps) {
     const [online, setOnline] = useState(false)
     const [loading, setLoading] = useState(true)
+
     const [responseTime, setResponseTime] = useState<number | null>(null)
 
     useEffect(() => {
@@ -84,7 +95,9 @@ export default function ServerItem({ server }: { server: ServerPC }) {
                 </Badge>
 
                 <button
-                    onClick={() => deleteServer(server.serverName)}
+                    onClick={() =>
+                        deleteServer(server.serverName, setReloaded, reloaded)
+                    }
                     className="flex h-6 w-6 items-center justify-center rounded-full text-red-400 transition hover:bg-red-50 hover:text-red-600"
                     title="Delete server"
                 >

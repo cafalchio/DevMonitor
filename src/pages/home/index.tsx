@@ -9,6 +9,7 @@ function Home() {
     const [serversList, setServersList] = useState<ServerPC[]>([])
     const [loading, setLoading] = useState(true)
     const [err, setErr] = useState<string | null>(null)
+    const [reloaded, setReloaded] = useState(false)
 
     useEffect(() => {
         checkOnline()
@@ -56,7 +57,7 @@ function Home() {
         return () => {
             cancelled = true
         }
-    }, [])
+    }, [reloaded])
 
     return (
         <div className="pt-safe-top pb-safe-bottom flex flex-col gap-4 overflow-y-auto px-4">
@@ -79,6 +80,8 @@ function Home() {
                     <ItemPC
                         key={`${server.serverName}-${server.ip_domain}`}
                         server={server}
+                        reloaded={reloaded}
+                        setReloaded={setReloaded}
                     />
                 ))}
             </div>
