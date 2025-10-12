@@ -22,20 +22,11 @@ function Home() {
             try {
                 const db = await getDB()
 
-                type Row = {
-                    serverName: string
-                    ip_domain: string
-                    protocol: string
-                    port: number
-                    timeMilliseconds: number
-                    notify: number // 0/1 in DB
-                }
-
-                const rows = await db.select<Row[]>(
+                const rows = await db.select<ServerPC[]>(
                     `SELECT serverName, ip_domain, protocol, port, timeMilliseconds, notify FROM servers ORDER BY serverName`
                 )
                 if (!cancelled) {
-                    const data: ServerPC[] = rows.map((r: Row) => ({
+                    const data: ServerPC[] = rows.map((r: ServerPC) => ({
                         serverName: r.serverName,
                         ip_domain: r.ip_domain,
                         protocol: r.protocol as ServerPC["protocol"],
