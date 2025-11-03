@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge"
 import { deleteServer } from "@/lib/db"
+import { notify } from "@/lib/utils"
 import { PingResult, ServerPC } from "@/types/server"
 import { invoke } from "@tauri-apps/api/core"
 import { error, info } from "@tauri-apps/plugin-log"
@@ -19,7 +20,7 @@ export default function ServerItem({
 }: ServerItemsProps) {
     const [online, setOnline] = useState(false)
     const [loading, setLoading] = useState(true)
-
+    const [notified, setNotified] = useState(false)
     const [responseTime, setResponseTime] = useState<number | null>(null)
 
     useEffect(() => {
@@ -37,11 +38,16 @@ export default function ServerItem({
                 setResponseTime(Date.now() - start)
                 setLoading(false)
                 info(`Ping: ${server.serverName} => ${result.success}`)
+                setNotified(false)
             } catch {
                 error(`Ping failed: ${server.serverName}`)
                 setOnline(false)
                 setResponseTime(null)
                 setLoading(false)
+                if (!notified) {
+                    notify(server.serverName, "Server Offline")
+                    setNotified(true)
+                }
             }
         }
 
