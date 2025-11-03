@@ -20,7 +20,7 @@ export default function ServerItem({
 }: ServerItemsProps) {
     const [online, setOnline] = useState(false)
     const [loading, setLoading] = useState(true)
-    const [notified, setNotified] = useState(false)
+    const [notifyOffline, setNotifyOffline] = useState(false)
     const [responseTime, setResponseTime] = useState<number | null>(null)
 
     useEffect(() => {
@@ -38,15 +38,18 @@ export default function ServerItem({
                 setResponseTime(Date.now() - start)
                 setLoading(false)
                 info(`Ping: ${server.serverName} => ${result.success}`)
-                setNotified(false)
+                setNotifyOffline(true)
             } catch {
                 error(`Ping failed: ${server.serverName}`)
                 setOnline(false)
                 setResponseTime(null)
                 setLoading(false)
-                if (!notified) {
-                    notify(server.serverName, "Server Offline")
-                    setNotified(true)
+                if (notifyOffline) {
+                    notify(
+                        `${server.serverName} Offline`,
+                        `${server.serverName} - ${server.ip_domain}`
+                    )
+                    setNotifyOffline(false)
                 }
             }
         }
