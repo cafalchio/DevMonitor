@@ -1,5 +1,5 @@
 import ItemPC from "@/components/serverItem"
-import { getDB } from "@/lib/db"
+import { fetchPCs } from "@/lib/pcs"
 import useConnectionStore from "@/stores/connection"
 import { ServerPC } from "@/types/server"
 import { useEffect, useState } from "react"
@@ -17,25 +17,10 @@ function Home() {
 
     useEffect(() => {
         let cancelled = false
-
         const load = async () => {
             try {
-                const db = await getDB()
-
-                const rows = await db.select<ServerPC[]>(
-                    `SELECT serverName, ip_domain, protocol, port, timeMilliseconds, notify FROM servers ORDER BY serverName`
-                )
-                if (!cancelled) {
-                    const data: ServerPC[] = rows.map((r: ServerPC) => ({
-                        serverName: r.serverName,
-                        ip_domain: r.ip_domain,
-                        protocol: r.protocol as ServerPC["protocol"],
-                        port: r.port,
-                        timeMilliseconds: r.timeMilliseconds,
-                        notify: Boolean(r.notify)
-                    }))
-                    setServersList(data)
-                }
+                const pcs = await fetchPCs()
+                if (!cancelled) setServersList(pcs)
             } catch (e) {
                 if (!cancelled)
                     setErr(e instanceof Error ? e.message : String(e))

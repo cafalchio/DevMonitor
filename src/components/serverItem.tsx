@@ -3,7 +3,7 @@ import { deleteServer } from "@/lib/db"
 import { PingResult, ServerPC } from "@/types/server"
 import { invoke } from "@tauri-apps/api/core"
 import { error, info } from "@tauri-apps/plugin-log"
-import { Minus, Monitor } from "lucide-react"
+import { Minus, Wifi } from "lucide-react"
 import { useEffect, useState } from "react"
 
 interface ServerItemsProps {
@@ -64,7 +64,7 @@ export default function ServerItem({
                               : "bg-red-50 text-red-600"
                     }`}
                 >
-                    <Monitor className="h-5 w-5" />
+                    <Wifi className="h-5 w-5" />
                 </div>
 
                 {/* Info */}

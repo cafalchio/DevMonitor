@@ -24,6 +24,7 @@ const DEFAULT_PORTS = {
 } as const
 
 const TIME_MS = {
+    _30s: 10000,
     five: 60000 * 5,
     fifteen: 60000 * 15,
     thirty: 60000 * 30,
@@ -43,7 +44,7 @@ const ProtocolEnum = z.enum([
     // "amqp"
 ])
 
-const TimeToCheckEnum = z.enum(["five", "fifteen", "thirty", "hour"])
+const TimeToCheckEnum = z.enum(["_30s", "five", "fifteen", "thirty", "hour"])
 
 // ✅ Schema keys match form field names
 const formSchema = z.object({
@@ -237,6 +238,7 @@ export default function AddPCForm({ addedToFormToggle }: AddPCFormProps) {
                                         ref={field.ref}
                                         className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
                                     >
+                                        <option value="_30s">Every 30 s</option>
                                         <option value="five">
                                             Every 5 minutes
                                         </option>
@@ -270,7 +272,7 @@ export default function AddPCForm({ addedToFormToggle }: AddPCFormProps) {
                                     htmlFor="notify"
                                     className="cursor-pointer text-sm select-none"
                                 >
-                                    Notify me
+                                    Notify Offline
                                 </label>
                                 <FormMessage />
                             </FormItem>

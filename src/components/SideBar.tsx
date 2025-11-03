@@ -32,7 +32,7 @@ export default function SettingsDrawer() {
 
                     <div className="fixed inset-0 overflow-hidden">
                         <div className="absolute inset-0 overflow-hidden">
-                            <div className="pointer-events-none fixed inset-y-0 left-0 flex w-screen max-w-none">
+                            <div className="fixed inset-y-0 flex w-screen">
                                 <TransitionChild
                                     as={Fragment}
                                     enter="transform transition ease-in-out duration-300"
@@ -42,19 +42,19 @@ export default function SettingsDrawer() {
                                     leaveFrom="translate-x-0"
                                     leaveTo="-translate-x-full"
                                 >
-                                    <DialogPanel className="pointer-events-auto flex h-full w-[70vw] max-w-3xl flex-col bg-white shadow-xl">
-                                        {" "}
+                                    <DialogPanel className="pointer-events-auto flex h-full w-[80vw] flex-col bg-white shadow-xl">
+                                        <div className="py-[calc(env(safe-area-inset-top)+.8rem)]"></div>
                                         {/* Header */}
-                                        <div className="flex items-center justify-end px-3 pt-[calc(env(safe-area-inset-top)+.8rem)]">
+                                        <div className="flex items-center justify-end">
                                             <button
                                                 onClick={() => setOpen(false)}
-                                                className="text-gray-500 hover:text-gray-700"
+                                                className="px-4 text-gray-500 hover:text-gray-700"
                                             >
                                                 <XMarkIcon className="h-6 w-6" />
                                             </button>
                                         </div>
                                         {/* Panel content */}
-                                        <div className="overflow-y-auto p-4">
+                                        <div className="overflow-y-auto px-4">
                                             <AddPCForm
                                                 addedToFormToggle={setOpen}
                                             />
