@@ -3,7 +3,7 @@ import { deleteServer } from "@/lib/db"
 import { notify } from "@/lib/utils"
 import { PingResult, ServerPC } from "@/types/server"
 import { invoke } from "@tauri-apps/api/core"
-import { error, info } from "@tauri-apps/plugin-log"
+import { error, warn } from "@tauri-apps/plugin-log"
 import { Minus, Wifi } from "lucide-react"
 import { useEffect, useState } from "react"
 
@@ -20,10 +20,10 @@ export default function ServerItem({
 }: ServerItemsProps) {
     const [online, setOnline] = useState(false)
     const [loading, setLoading] = useState(true)
-    const [notifyOffline, setNotifyOffline] = useState(false)
     const [responseTime, setResponseTime] = useState<number | null>(null)
 
     useEffect(() => {
+        let previousOnline = false
         const checkOnline = async () => {
             try {
                 const result = await invoke<PingResult>("ping_server", {
@@ -35,20 +35,29 @@ export default function ServerItem({
                 setOnline(result.success)
                 setResponseTime(result.rtt)
                 setLoading(false)
-                info(`Ping: ${server.serverName} => ${result.success}`)
-                setNotifyOffline(true)
+                warn(`Ping: ${server.serverName} => ${result.success}`)
+
+                // Notify once when transitioning from online -> offline
+                if (!result.success && previousOnline) {
+                    notify(
+                        `${server.serverName} Offline`,
+                        `${server.serverName} - ${server.ip_domain}`
+                    )
+                }
+                previousOnline = result.success
             } catch {
                 error(`Ping failed: ${server.serverName}`)
                 setOnline(false)
                 setResponseTime(null)
                 setLoading(false)
-                if (notifyOffline) {
+
+                if (previousOnline) {
                     notify(
                         `${server.serverName} Offline`,
                         `${server.serverName} - ${server.ip_domain}`
                     )
-                    setNotifyOffline(false)
                 }
+                previousOnline = false
             }
         }
 

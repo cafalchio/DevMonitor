@@ -3,6 +3,7 @@ pub mod db_migration;
 
 use futures::future::join_all;
 use httping::{ping, ping_with_metrics};
+use log;
 use serde::Serialize;
 use std::net::Ipv4Addr;
 
@@ -48,7 +49,11 @@ async fn ping_server(domain: &str, protocol: &str, port: u32) -> Result<PingResu
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_notification::init())
-        .plugin(tauri_plugin_log::Builder::new().build())
+        .plugin(
+            tauri_plugin_log::Builder::new()
+                .level(log::LevelFilter::Info)
+                .build(),
+        )
         .plugin(
             tauri_plugin_sql::Builder::new()
                 .add_migrations(DB_URL, db_migration::create_initial_tables())
