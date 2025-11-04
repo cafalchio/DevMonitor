@@ -42,8 +42,7 @@ export default function SettingsDrawer() {
                                     leaveFrom="translate-x-0"
                                     leaveTo="-translate-x-full"
                                 >
-                                    <DialogPanel className="pointer-events-auto flex h-full w-[80vw] flex-col bg-white shadow-xl">
-                                        <div className="py-[calc(env(safe-area-inset-top)+.8rem)]"></div>
+                                    <DialogPanel className="pointer-events-auto flex h-full w-[80vw] flex-col bg-white py-[calc(env(safe-area-inset-top)+.8rem)] shadow-xl">
                                         {/* Header */}
                                         <div className="flex items-center justify-end">
                                             <button
