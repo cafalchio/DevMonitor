@@ -26,16 +26,14 @@ export default function ServerItem({
     useEffect(() => {
         const checkOnline = async () => {
             try {
-                const start = Date.now()
                 const result = await invoke<PingResult>("ping_server", {
                     domain: server.ip_domain,
                     ip: server.ip_domain,
                     protocol: server.protocol,
                     port: server.port
                 })
-
                 setOnline(result.success)
-                setResponseTime(Date.now() - start)
+                setResponseTime(result.rtt)
                 setLoading(false)
                 info(`Ping: ${server.serverName} => ${result.success}`)
                 setNotifyOffline(true)
