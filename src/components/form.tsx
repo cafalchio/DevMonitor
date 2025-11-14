@@ -1,7 +1,5 @@
-// AddPCForm.tsx
-"use client"
-
-import { getDB } from "@/lib/db"
+import { addServer } from "@/lib/db"
+import { ServerPC } from "@/types/server"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
@@ -13,14 +11,6 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form"
 const DEFAULT_PORTS = {
     http: 80,
     https: 443
-    // ftp: 21,
-    // sftp: 22,
-    // ssh: 22,
-    // smtp: 25,
-    // imap: 143,
-    // pop3: 110,
-    // mqtt: 1883,
-    // amqp: 5672
 } as const
 
 const TIME_MS = {
@@ -31,22 +21,11 @@ const TIME_MS = {
     hour: 60000 * 60
 } as const
 
-const ProtocolEnum = z.enum([
-    "http",
-    "https"
-    // "ftp",
-    // "sftp",
-    // "ssh",
-    // "smtp",
-    // "imap",
-    // "pop3",
-    // "mqtt",
-    // "amqp"
-])
+const ProtocolEnum = z.enum(["http", "https"])
 
 const TimeToCheckEnum = z.enum(["_30s", "five", "fifteen", "thirty", "hour"])
 
-// ✅ Schema keys match form field names
+// Schema keys match form field names
 const formSchema = z.object({
     serverName: z.string().min(1, { message: "Required." }).max(10),
     ip_domain: z.string().min(1, { message: "Required." }).max(100),
@@ -92,43 +71,32 @@ export default function AddPCForm({ addedToFormToggle }: AddPCFormProps) {
     }, [protocol, form])
 
     const onSubmit = async (values: FormOutput) => {
-        try {
-            const db = await getDB()
-            console.log("DB", db)
-            console.log([
-                values.serverName,
-                values.ip_domain,
-                values.protocol,
-                values.port,
-                TIME_MS[values.timetocheck],
-                values.notify ? 1 : 0
-            ])
-            await db.execute(
-                `INSERT INTO servers (servername, ip_domain, protocol, port, timeMilliseconds, notify)
-         VALUES (?, ?, ?, ?, ?, ?)`,
-                [
-                    values.serverName,
-                    values.ip_domain,
-                    values.protocol,
-                    values.port,
-                    TIME_MS[values.timetocheck],
-                    values.notify ? 1 : 0
-                ]
-            )
-            console.log("Server added successfully")
-            window.location.reload()
-            form.reset({
-                serverName: "",
-                ip_domain: "",
-                protocol: "https",
-                port: DEFAULT_PORTS.https,
-                timetocheck: "thirty",
-                notify: false
-            })
-            addedToFormToggle(false)
-        } catch (err) {
-            console.error("Error adding server:", err)
+        const newPc: ServerPC = {
+            serverName: values.serverName,
+            ip_domain: values.ip_domain,
+            protocol: values.protocol,
+            port: values.port,
+            timeMilliseconds: TIME_MS[values.timetocheck],
+            notify: values.notify ? 1 : 0
         }
+
+        const serverName = await addServer(newPc)
+            .then(() => {
+                window.location.reload()
+                form.reset({
+                    serverName: "",
+                    ip_domain: "",
+                    protocol: "https",
+                    port: DEFAULT_PORTS.https,
+                    timetocheck: "thirty",
+                    notify: false
+                })
+                addedToFormToggle(false)
+                console.log("Server added to DB ", serverName)
+            })
+            .catch((err) => {
+                console.error("Error adding server:", err)
+            })
     }
 
     return (
@@ -187,14 +155,6 @@ export default function AddPCForm({ addedToFormToggle }: AddPCFormProps) {
                                     >
                                         <option value="http">HTTP</option>
                                         <option value="https">HTTPS</option>
-                                        {/* <option value="ftp">FTP</option>
-                                        <option value="sftp">SFTP</option>
-                                        <option value="ssh">SSH</option>
-                                        <option value="smtp">SMTP</option>
-                                        <option value="imap">IMAP</option>
-                                        <option value="pop3">POP3</option>
-                                        <option value="mqtt">MQTT</option>
-                                        <option value="amqp">AMQP</option> */}
                                     </select>
                                 </FormControl>
                                 <FormMessage />

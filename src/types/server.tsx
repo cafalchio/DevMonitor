@@ -11,7 +11,7 @@ export type ServerPC = {
     protocol: string
     port: number
     timeMilliseconds: number
-    notify: boolean
+    notify: number
 }
 
 export type PingResult = {

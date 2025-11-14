@@ -1,5 +1,5 @@
 import ItemPC from "@/components/serverItem"
-import { fetchPCs } from "@/lib/pcs"
+import { fetchPCs } from "@/lib/db"
 import useConnectionStore from "@/stores/connection"
 import { ServerPC } from "@/types/server"
 import { useEffect, useState } from "react"
